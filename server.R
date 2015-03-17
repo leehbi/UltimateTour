@@ -1,5 +1,5 @@
 library(shiny)
-
+library(data.table)
 CONSUMER_KEY = ""
 CONSUMER_SECRET = ""
 TOKEN = ""
@@ -219,11 +219,12 @@ shinyServer(function(input, output) {
   route <- reactive({
     #Find the distances between venues
     x <- distance.matrix(dataset()$LatLong,yelpdat)
-    #Predict the optimal route
-    w.route<-tsp.route(x,dataset()$Names)
-    #Sort the Yelp venues by the predicted route
-    sorted.route<-dataset()$df[match(w.route$route, dataset()$df$business.names),]
-    sorted.route   
+    
+      w.route<-tsp.route(x,dataset()$Names)
+      #Sort the Yelp venues by the predicted route
+      sorted.route<-dataset()$df[match(w.route$route, dataset()$df$business.names),]
+      sorted.route 
+     
   })
   
   output$venues <- renderDataTable({
@@ -231,7 +232,7 @@ shinyServer(function(input, output) {
   
   output$route <- renderTable({
     route()
-  })
+  }, height=800, width="auto")
   
   output$map <- renderPlot({
       
